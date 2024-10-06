@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from discord.ext.commands import cooldown
+# from discord.ext.commands import cooldown
 from dotenv import load_dotenv
 
 # Custom Library's
@@ -48,19 +48,19 @@ async def on_ready():
 # Command that the bot will respond to with "Pong!"
 @bot.command(name="fighters")
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
-async def fighters(ctx):
-    # Get Participants
+async def _fighters(ctx):
+    # Get Participants and Chosen Fighters
     # Check if the call is in the Character Select Channel
     if ctx.channel.id in [char_select_id, bot_test_id]:
-        players = challonge_tournament.get_participants(tournament)
-        for player in players:
-            await ctx.send(player[0] + " as " + player[1])
+        players_fighters = challonge_tournament.get_participants(tournament)
+        for player_fighter in players_fighters:
+            await ctx.send(player_fighter[0] + " as " + player_fighter[1])
 
 
 # Command that the bot will respond to with "Pong!"
 @bot.command(name="players")
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
-async def players(ctx):
+async def _players(ctx):
     # Get Participants
     # Check if the call is in the Maniacs Tournament and Tournament Bracket Channels
     if ctx.channel.id in [main_id, bracket_id, bot_test_id]:
@@ -71,7 +71,7 @@ async def players(ctx):
 
 @bot.command(name="begin")
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
-async def begin(ctx):
+async def _begin(ctx):
     # Check if the call is in the Maniacs Tournament Channel
     if ctx.channel.id in [main_id, bot_test_id]:
         await ctx.send("Tournament: " + tournament_name)
@@ -84,22 +84,19 @@ async def begin(ctx):
 
 @bot.command(name="matches")
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
-async def get_matches(ctx):
+async def _get_matches(ctx):
     # Get matches
     # Check if the call is in the Tournament Bracket Channel
     if ctx.channel.id in [bracket_id, bot_test_id]:
         matches = challonge_tournament.get_matches(tournament, current_tournament)
         round = 1
         if matches:
-            for fighters in matches:
+            for fighter in matches:
                 await ctx.send("Match: " + str(round))
-                await ctx.send(fighters[0] + " as" + fighters[1] + " VS " + fighters[2] + " as " + fighters[3])
-                if len(fighters) == 3:
-                    await ctx.send("Winner: " + fighters[4])
-                if len(matches) >= round:
-                    round = len(matches)
-                else:
-                    round += 1
+                await ctx.send(fighter[0] + " as" + fighter[1] + " VS " + fighter[2] + " as " + fighter[3])
+                if len(fighter) == 3:
+                    await ctx.send("Winner: " + fighter[4])
+                round += 1
         else:
             await ctx.send("Tournament Has Not Started!!")
             await ctx.send("Start Date and Time: " + tournament_time)
@@ -107,7 +104,7 @@ async def get_matches(ctx):
 
 @bot.command(name="register")
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
-async def register(ctx):
+async def _register(ctx):
     # Check if the call is in the Maniacs Tournament Channel
     if ctx.channel.id in [main_id, bot_test_id]:
         if tournament['state'] == 'pending':

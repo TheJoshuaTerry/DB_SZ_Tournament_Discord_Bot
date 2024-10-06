@@ -1,8 +1,4 @@
 import challonge
-import iso8601
-import tzlocal
-import pytz
-import requests
 
 # Custom Library's
 from time_conversion import convert_start_time
@@ -61,7 +57,6 @@ def tournament_name(tournament):
 
 def tournament_start_time(tournament):
     # Receive the Start Time of Event
-    check_in_time = tournament["started_checking_in_at"]
     return convert_start_time(str(tournament["start_at"])) # 2011-07-31 16:16:02-04:00
 
 
