@@ -1,6 +1,7 @@
 import os
 import discord
 from discord.ext import commands
+from discord.ext.commands import cooldown
 from dotenv import load_dotenv
 
 # Custom Library's
@@ -17,6 +18,10 @@ bot_test_id = int(os.getenv('BOT_TEST')) # Test Channel
 main_id = int(os.getenv('MAIN')) # Maniacs Tournament
 bracket_id = int(os.getenv('BRACKET')) # Tournament Bracket
 char_select_id = int(os.getenv('CHARACTER_SELECT')) # Character Select
+
+# Cooldown rate variables
+cooldown_rate = 1 # Times called before cooldown
+cooldown_time = 10 # In seconds
 
 # Set Challonge Credentials
 challonge_tournament.set_creds(USERNAME, API_Key)
@@ -42,6 +47,7 @@ async def on_ready():
 
 # Command that the bot will respond to with "Pong!"
 @bot.command(name="fighters")
+@commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def fighters(ctx):
     # Get Participants
     # Check if the call is in the Character Select Channel
@@ -53,6 +59,7 @@ async def fighters(ctx):
 
 # Command that the bot will respond to with "Pong!"
 @bot.command(name="players")
+@commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def players(ctx):
     # Get Participants
     # Check if the call is in the Maniacs Tournament and Tournament Bracket Channels
@@ -63,6 +70,7 @@ async def players(ctx):
 
 
 @bot.command(name="begin")
+@commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def begin(ctx):
     # Check if the call is in the Maniacs Tournament Channel
     if ctx.channel.id in [main_id, bot_test_id]:
@@ -75,6 +83,7 @@ async def begin(ctx):
 
 
 @bot.command(name="matches")
+@commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def get_matches(ctx):
     # Get matches
     # Check if the call is in the Tournament Bracket Channel
@@ -97,6 +106,7 @@ async def get_matches(ctx):
 
 
 @bot.command(name="register")
+@commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def register(ctx):
     # Check if the call is in the Maniacs Tournament Channel
     if ctx.channel.id in [main_id, bot_test_id]:
