@@ -13,10 +13,10 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 API_Key = os.getenv('API_V1')
 USERNAME = os.getenv('CHALLONGE_USERNAME')
 current_tournament = os.getenv('TOURNAMENT')
-bot_test_id = os.getenv('BOT_TEST') # Test Channel
-main_id = os.getenv('MAIN') # Maniacs Tournament
-bracket_id = os.getenv('BRACKET') # Tournament Bracket
-char_select_id = os.getenv('CHARACTER_SELECT') # Character Select
+bot_test_id = int(os.getenv('BOT_TEST')) # Test Channel
+main_id = int(os.getenv('MAIN')) # Maniacs Tournament
+bracket_id = int(os.getenv('BRACKET')) # Tournament Bracket
+char_select_id = int(os.getenv('CHARACTER_SELECT')) # Character Select
 
 # Set Challonge Credentials
 challonge_tournament.set_creds(USERNAME, API_Key)
