@@ -67,3 +67,11 @@ def tournament_start_time(tournament):
 
 def register_url(tournament):
     return tournament['sign_up_url']
+
+# Test Functions
+def get_all_tournaments():
+    tournaments = challonge.tournaments.index()
+    for tournament in tournaments:
+        print(tournament['name'])
+        print(tournament['id'])
+        print(tournament['url'])
