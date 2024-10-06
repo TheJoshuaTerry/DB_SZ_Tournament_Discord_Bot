@@ -21,7 +21,7 @@ char_select_id = int(os.getenv('CHARACTER_SELECT')) # Character Select
 
 # Cooldown rate variables
 cooldown_rate = 1 # Times called before cooldown
-cooldown_time = 10 # In seconds
+cooldown_time = 120 # In seconds
 
 # Set Challonge Credentials
 challonge_tournament.set_creds(USERNAME, API_Key)
