@@ -16,11 +16,12 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 API_Key = os.getenv('API_V1')
 USERNAME = os.getenv('CHALLONGE_USERNAME')
-current_tournament = os.getenv('TOURNAMENT')
+current_tournament = os.getenv('CURRENT_TOURNAMENT')
 bot_test_id = int(os.getenv('BOT_TEST')) # Test Channel
-main_id = int(os.getenv('MAIN')) # Maniacs Tournament
+main_id = int(os.getenv('MAIN')) # Sparking Zero
 bracket_id = int(os.getenv('BRACKET')) # Tournament Bracket
 char_select_id = int(os.getenv('CHARACTER_SELECT')) # Character Select
+tournament_id = int(os.getenv('TOURNAMENT')) # Maniacs Tournament
 
 # Cooldown rate variables
 cooldown_rate = 1 # Times called before cooldown
@@ -67,7 +68,7 @@ async def _fighters(ctx):
 async def _players(ctx):
     # Get Participants
     # Check if the call is in the Maniacs Tournament and Tournament Bracket Channels
-    if ctx.channel.id in [main_id, bracket_id, bot_test_id]:
+    if ctx.channel.id in [tournament_id, bracket_id, bot_test_id]:
         players = challonge_tournament.get_participants(tournament)
         for player in players:
             await ctx.send(player[0])
@@ -77,7 +78,7 @@ async def _players(ctx):
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def _begin(ctx):
     # Check if the call is in the Maniacs Tournament Channel
-    if ctx.channel.id in [main_id, bot_test_id]:
+    if ctx.channel.id in [tournament_id, bot_test_id]:
         await ctx.send("Tournament: " + tournament_name)
         await ctx.send("Start Date and Time: " + tournament_time)
         minutes = tournament['check_in_duration']
@@ -110,7 +111,7 @@ async def _get_matches(ctx):
 @commands.cooldown(cooldown_rate, cooldown_time, commands.BucketType.user)
 async def _register(ctx):
     # Check if the call is in the Maniacs Tournament Channel
-    if ctx.channel.id in [main_id, bot_test_id]:
+    if ctx.channel.id in [tournament_id, bot_test_id]:
         if tournament['state'] == 'pending':
             register_url = challonge_tournament.register_url(tournament)
             await ctx.send("Register @ " + register_url)
@@ -121,7 +122,7 @@ async def _register(ctx):
 
 
 async def countdown():
-    channel = bot.get_channel(bot_test_id)
+    channel = bot.get_channel(main_id)
     now = datetime.now(pytz.timezone('US/Central'))
 
     target_early_release = now.replace(hour=17, minute=0, second=0, microsecond=0)
