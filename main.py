@@ -1,8 +1,11 @@
+import asyncio
 import os
 import discord
 from discord.ext import commands
 # from discord.ext.commands import cooldown
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+import pytz
 
 # Custom Library's
 import challonge_tournament
@@ -44,6 +47,7 @@ bot = commands.Bot(command_prefix="_", intents=intents)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}')
+    await countdown()
 
 # Command that the bot will respond to with "Pong!"
 @bot.command(name="fighters")
@@ -114,6 +118,43 @@ async def _register(ctx):
             await ctx.send("Tournament Has Started!!")
     else:
         print("Not in channel restriction")
+
+
+async def countdown():
+    channel = bot.get_channel(bot_test_id)
+    now = datetime.now(pytz.timezone('US/Central'))
+
+    target_early_release = now.replace(hour=17, minute=0, second=0, microsecond=0)
+    target_release = datetime(2024, 10, 10, 17, 0, 0, tzinfo=pytz.timezone('US/Central'))
+
+    if now > target_early_release:
+        target_early_release += timedelta(days=1)
+    target_time = target_early_release if now < target_early_release else target_release
+    countdown_prefix = "EARLY RELEASE" if target_time == target_early_release else "FINAL RELEASE"
+
+    while True:
+        now = datetime.now(pytz.timezone('US/Central'))
+        remaining_time = target_time - now
+
+        if remaining_time.total_seconds() <= 0:
+            await channel.send("Countdown finished!")
+            break
+        else:
+            hours, remainder = divmod(remaining_time.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            countdown_message = f"Time remaining until {countdown_prefix}: {hours} hours, {minutes} minutes, {seconds} seconds"
+            await channel.send(countdown_message)
+            if remaining_time.total_seconds() < 15:
+                await asyncio.sleep(1)
+            elif remaining_time.total_seconds() < 60:
+                await asyncio.sleep(15)
+            elif remaining_time.total_seconds() < 3600:
+                await asyncio.sleep(60)
+            else:
+                await asyncio.sleep(24 * 3600)
+        if now >= target_release:
+            await channel.send(f"{countdown_prefix} time reached!")
+            break
 
 
 # Run the bot
