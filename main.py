@@ -122,40 +122,55 @@ async def _register(ctx):
 
 
 async def countdown():
-    channel = bot.get_channel(main_id)
-    now = datetime.now(pytz.timezone('US/Central'))
+    channel = bot.get_channel(bot_test_id)
 
-    target_early_release = now.replace(hour=17, minute=0, second=0, microsecond=0)
-    target_release = datetime(2024, 10, 10, 17, 0, 0, tzinfo=pytz.timezone('US/Central'))
+    start_time = datetime(2024, 10, 12,15 , 0, 0, tzinfo=pytz.timezone('US/Central'))
+    check_in_time = datetime(2024, 10, 12, 13, 0, 0, tzinfo=pytz.timezone('US/Central'))
 
-    if now > target_early_release:
-        target_early_release += timedelta(days=1)
-    target_time = target_early_release if now < target_early_release else target_release
-    countdown_prefix = "EARLY RELEASE" if target_time == target_early_release else "FINAL RELEASE"
+    countdown_prefix = "Tournament"
 
     while True:
         now = datetime.now(pytz.timezone('US/Central'))
-        remaining_time = target_time - now
+        remaining_time = start_time - now
+        remaining_time_till_check_in = check_in_time - now
+
+        if remaining_time_till_check_in.total_seconds() > 3600 * 2:
+            message_suffix = f"\nCheck-In starts 2 hours before the tournament begins!!!!!"
+        else:
+            message_suffix = f"\nCheck-In has began. Get checked in before the tournament starts.\nFailure to check in could result in a disqualification!!!!"
+
 
         if remaining_time.total_seconds() <= 0:
-            await channel.send("Countdown finished!")
+            await channel.send("Countdown finished!\nThe Tournament STARTS NOW!!!!")
             break
         else:
+            days = remaining_time.days
             hours, remainder = divmod(remaining_time.seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            countdown_message = f"Time remaining until {countdown_prefix}: {hours} hours, {minutes} minutes, {seconds} seconds"
+
+            if days > 1:
+                countdown_message = f"Time remaining until {countdown_prefix}: {days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
+            elif days == 1:
+                countdown_message = f"Time remaining until {countdown_prefix}: {days} day, {hours} hours, {minutes} minutes, {seconds} seconds"
+            else:
+                countdown_message = f"Time remaining until {countdown_prefix}: {hours} hours, {minutes} minutes, {seconds} seconds"
+
+            countdown_message = countdown_message + message_suffix
+
             await channel.send(countdown_message)
+
             if remaining_time.total_seconds() < 15:
                 await asyncio.sleep(1)
             elif remaining_time.total_seconds() < 60:
                 await asyncio.sleep(15)
             elif remaining_time.total_seconds() < 3600:
-                await asyncio.sleep(60)
+                await asyncio.sleep(300)
+            elif remaining_time.total_seconds() < 7200:
+                await asyncio.sleep(900)
+            elif remaining_time.total_seconds() < 24 * 3600:
+                await asyncio.sleep(3600)
             else:
-                await asyncio.sleep(24 * 3600)
-        if now >= target_release:
-            await channel.send(f"{countdown_prefix} time reached!")
-            break
+                await asyncio.sleep(2 * 3600)
 
 
 # Run the bot
